@@ -22,6 +22,16 @@ ROBOT_CONFIG = {
     }
 }
 
+# Hard-coded preset angles
+PRESET_POSITION = {
+    "shoulder_pan": 0.0,
+    "shoulder_lift": 163.0,
+    "elbow_flex": 120.0,
+    "wrist_flex": 78.0,
+    "wrist_roll": -101.0,
+    "gripper": 0.0
+}
+
 def main():
     if len(sys.argv) != 2 or sys.argv[1] not in ROBOT_CONFIG:
         print("Usage: python move_home.py [red|blue]")
@@ -46,7 +56,7 @@ def main():
 
     # Load home position from file
     with open(home_file, "r") as f:
-        desired_positions = json.load(f)
+        home_positions = json.load(f)
     print(f"Loaded home positions from {home_file}")
 
     # Configure motor bus
@@ -66,22 +76,33 @@ def main():
     motors_bus.connect()
     print(f"Connected to {robot_name} robot on port {port}")
 
+    # Load calibration
     with open(calibration_file, "r") as f:
         calibration_data = json.load(f)
     motors_bus.set_calibration(calibration_data)
     print("Calibration loaded.")
 
+    # 1) Move to the hard-coded preset position
+    print("Moving to preset position...")
     motor_names = motors_bus.motor_names
-    target_list = [desired_positions[name] for name in motor_names]
+    preset_targets = [PRESET_POSITION[name] for name in motor_names]
+    motors_bus.write("Goal_Position", preset_targets)
+    time.sleep(0.5)  # Wait for motors to reach position
 
-    motors_bus.write("Goal_Position", target_list)
+    final_positions_preset = motors_bus.read("Present_Position")
+    print("Positions after moving to preset:")
+    for name, pos in zip(motor_names, final_positions_preset):
+        print(f"  {name}: {pos:.2f}")
+
+    # 2) Move to the "home" position
     print("Moving to home position...")
+    home_targets = [home_positions[name] for name in motor_names]
+    motors_bus.write("Goal_Position", home_targets)
+    time.sleep(0.5)
 
-    time.sleep(2.0)
-
-    final_positions = motors_bus.read("Present_Position")
-    print("Final positions:")
-    for name, pos in zip(motor_names, final_positions):
+    final_positions_home = motors_bus.read("Present_Position")
+    print("Final positions (home):")
+    for name, pos in zip(motor_names, final_positions_home):
         print(f"  {name}: {pos:.2f}")
 
     motors_bus.disconnect()
