@@ -39,30 +39,27 @@ ACCEL     = 60.0       # deg/sec^2
 INTERVAL  = 0.02        # control loop interval (s)
 
 def bang_bang_trajectory(start, end, accel, max_speed, dt):
-    """
-    Returns (positions, times) arrays for a bang‑bang move from start→end.
-    """
     delta     = end - start
     direction = np.sign(delta) if delta != 0 else 1
     dist      = abs(delta)
     if dist < 1e-6:
         return np.array([start]), np.array([0.0])
 
-    # time to reach max_speed
     t_a = max_speed / accel
     d_a = 0.5 * accel * t_a**2
 
     if 2*d_a < dist:
-        # trapezoid: accel, cruise, decel
+        # trapezoid profile
         d_c = dist - 2*d_a
         t_c = d_c / max_speed
         T   = 2*t_a + t_c
         v   = max_speed
     else:
-        # triangle: accel then decel
+        # triangular profile
         t_a = np.sqrt(dist / accel)
         v   = accel * t_a
         d_a = 0.5 * accel * t_a**2
+        d_c = 0.0     # <— ensure it's set!
         t_c = 0.0
         T   = 2*t_a
 
@@ -76,9 +73,12 @@ def bang_bang_trajectory(start, end, accel, max_speed, dt):
             x = d_a + v * (t - t_a)
         else:
             td = t - t_a - t_c
-            x = d_a + v*td - 0.5*accel*td**2 + (0 if t_c else 0)
+            # <-- corrected deceleration
+            x = d_a + d_c + v*td - 0.5*accel*td**2
         pos.append(start + direction * x)
+
     return np.array(pos), times
+
 
 def run_trajectory(bus, motor_names, start, targets):
     """
