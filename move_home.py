@@ -14,13 +14,13 @@ from lerobot.common.robot_devices.motors.configs import FeetechMotorsBusConfig
 ROBOT_CONFIG = {
     "red": {
         "port": "/dev/ttyACM1",
-        "calibration_file": os.path.expanduser("~/lerobot/.cache/calibration/so100/red_follower.json"),
-        "home_file":        os.path.expanduser("~/lerobot/.cache/calibration/so100/red_home_position.json")
+        "calibration_file": os.path.expanduser("~/lerobot/.cache/calibration/so100-red/main_follower.json"),
+        "home_file":        os.path.expanduser("~/lerobot/.cache/calibration/so100-red/red_home_position.json")
     },
     "blue": {
         "port": "/dev/ttyACM2",
-        "calibration_file": os.path.expanduser("~/lerobot/.cache/calibration/so100/blue_follower.json"),
-        "home_file":        os.path.expanduser("~/lerobot/.cache/calibration/so100/blue_home_position.json")
+        "calibration_file": os.path.expanduser("~/lerobot/.cache/calibration/so100-blue/main_follower.json"),
+        "home_file":        os.path.expanduser("~//lerobot/.cache/calibration/so100-blue/blue_home_position.json")
     }
 }
 
