@@ -26,7 +26,7 @@ ROBOT_CONFIG = {
 
 # Hard‑coded preset angles
 PRESET_POSITION = {
-    "shoulder_pan": 0.0,
+    "shoulder_pan": 2.0,
     "shoulder_lift": 163.0,
     "elbow_flex": 120.0,
     "wrist_flex": 78.0,
@@ -35,8 +35,8 @@ PRESET_POSITION = {
 }
 
 # Trajectory parameters
-MAX_SPEED = 40.0   # deg/sec
-ACCEL     = 60.0   # deg/sec^2
+MAX_SPEED = 50.0   # deg/sec
+ACCEL     = 80.0   # deg/sec^2
 INTERVAL  = 0.02   # sec (20 ms control loop)
 
 
